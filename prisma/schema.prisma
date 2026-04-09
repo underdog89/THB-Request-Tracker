@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id       String        @id @default(cuid())
+  name     String        @unique
+  slug     String        @unique
+  requests Request[]
+  config   AccountConfig?
+  createdAt DateTime     @default(now())
+}
+
+model AccountConfig {
+  id        String  @id @default(cuid())
+  accountId String  @unique
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // Per-account dropdown options stored as JSON arrays
+  // Falls back to global defaults in lib/enums.ts if "[]"
+  typeOptions                String @default("[]")
+  platformOptions            String @default("[]")
+  contractOptions            String @default("[]")
+  unitOptions                String @default("[]")
+  implStatusOptions          String @default("[]")
+  chargeTypeOptions          String @default("[]")
+  notChargeableReasonOptions String @default("[]")
+  commercialStageOptions     String @default("[]")
+
+  // Field visibility/required rules: JSON object
+  // e.g. { "unit": { "hidden": true }, "contract": { "required": true } }
+  fieldRules String @default("{}")
+
+  updatedAt DateTime @updatedAt
+}
+
+model Request {
+  id                  String          @id @default(cuid())
+  accountId           String
+  account             Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  item                String
+  type                String
+  contract            String?
+  unit                String?
+  platform            String?
+  implStatus          String          @default("New")
+  inPipelineOrLive    String?
+  originalScope       String          @default("Original")
+  inContract          String?
+  chargeable          String          @default("TBD")
+  notChargeableReason String?
+  chargeType          String?
+  commercialStage     String?
+  commercialNotes     String?
+  remarks             String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  statusHistory       StatusHistory[]
+}
+
+model StatusHistory {
+  id        String   @id @default(cuid())
+  requestId String
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  field     String
+  oldValue  String?
+  newValue  String?
+  changedAt DateTime @default(now())
+  changedBy String   @default("System")
+}

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(./node_modules/.bin/ts-node --version)",
+      "Bash(node -e 'const {PrismaClient}=require\\('\\\\''@prisma/client'\\\\''\\);const p=new PrismaClient\\(\\);Promise.all\\([p.account.count\\(\\),p.request.count\\(\\)]\\).then\\(\\([a,r]\\)=>console.log\\('\\\\''Accounts:'\\\\'',a,'\\\\''Requests:'\\\\'',r\\)\\).finally\\(\\(\\)=>p.$disconnect\\(\\)\\)')",
+      "Bash(node -e ':*)",
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(taskkill //F //IM node.exe)"
+    ]
+  }
+}
