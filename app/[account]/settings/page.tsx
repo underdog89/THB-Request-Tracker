@@ -76,7 +76,7 @@ export default async function AccountSettingsPage({ params }: PageProps) {
               hasAccountOverride={
                 account.config
                   ? (JSON.parse(
-                      (account.config as Record<string, string>)[`${key}Options`] ?? "[]"
+                      (account.config as unknown as Record<string, string>)[`${key}Options`] ?? "[]"
                     ) as string[]).length > 0
                   : false
               }
