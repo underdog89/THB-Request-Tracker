@@ -46,8 +46,8 @@ export default async function AllRequestsPage({ searchParams }: PageProps) {
   ]);
 
   // Derive unique contract/unit values across all visible requests for the global filter
-  const allContracts = [...new Set(requests.map((r) => r.contract).filter(Boolean))] as string[];
-  const allUnits = [...new Set(requests.map((r) => r.unit).filter(Boolean))] as string[];
+  const allContracts = Array.from(new Set(requests.map((r) => r.contract).filter(Boolean))) as string[];
+  const allUnits = Array.from(new Set(requests.map((r) => r.unit).filter(Boolean))) as string[];
 
   return (
     <div className="space-y-4">
