@@ -13,6 +13,7 @@ import Link from "next/link";
 
 interface PageProps {
   searchParams: {
+    priority?: string;
     implStatus?: string;
     chargeable?: string;
     commercialStage?: string;
@@ -28,6 +29,7 @@ interface PageProps {
 
 export default async function AllRequestsPage({ searchParams }: PageProps) {
   const filters = {
+    priority: searchParams.priority,
     implStatus: searchParams.implStatus,
     chargeable: searchParams.chargeable,
     commercialStage: searchParams.commercialStage,

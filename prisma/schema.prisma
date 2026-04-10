@@ -47,6 +47,7 @@ model Request {
   accountId           String
   account             Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
   item                String
+  priority            String?
   type                String
   contract            String?
   unit                String?

@@ -8,11 +8,14 @@ import { CommercialFunnel } from "@/components/dashboard/CommercialFunnel";
 import { UnitBreakdown } from "@/components/dashboard/UnitBreakdown";
 import { ContractBreakdown } from "@/components/dashboard/ContractBreakdown";
 import { DashboardControls } from "@/components/dashboard/DashboardControls";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+import { TypeLimitChart } from "@/components/dashboard/TypeLimitChart";
+import { resolveOptions } from "@/lib/config";
 import Link from "next/link";
 
 interface PageProps {
   params: { account: string };
-  searchParams: { scope?: string };
+  searchParams: { scope?: string; unit?: string; contract?: string };
 }
 
 const RESERVED = ["all", "api", "_next", "favicon.ico"];
@@ -30,7 +33,18 @@ export default async function AccountDashboard({ params, searchParams }: PagePro
     scope === "original" ? "Original" :
     "all";
 
-  const stats = await getDashboardStats(account.id, originalScopeFilter as "New request" | "Original" | "all");
+  const unit = searchParams.unit;
+  const contract = searchParams.contract;
+
+  const stats = await getDashboardStats(
+    account.id,
+    originalScopeFilter as "New request" | "Original" | "all",
+    unit,
+    contract,
+  );
+
+  const unitOptions = resolveOptions(account.config, "unit");
+  const contractOptions = resolveOptions(account.config, "contract");
 
   const scopeLabel =
     scope === "new" ? "New Requests" :
@@ -62,7 +76,10 @@ export default async function AccountDashboard({ params, searchParams }: PagePro
         </div>
       </div>
 
-      <DashboardControls scope={scope} />
+      <div className="flex flex-wrap items-center gap-3">
+        <DashboardControls scope={scope} />
+        <DashboardFilters unitOptions={unitOptions} contractOptions={contractOptions} />
+      </div>
 
       <KPICards stats={stats} />
 
@@ -85,6 +102,22 @@ export default async function AccountDashboard({ params, searchParams }: PagePro
       )}
 
       <CommercialFunnel data={stats.commercialFunnel} />
+
+      {(stats.carePathwaysByUnit.length > 0 || stats.carePathwaysByContract.length > 0) && (
+        <TypeLimitChart
+          typeName="Care Pathway"
+          unitData={stats.carePathwaysByUnit}
+          contractData={stats.carePathwaysByContract}
+        />
+      )}
+
+      {(stats.counsellorByUnit.length > 0 || stats.counsellorByContract.length > 0) && (
+        <TypeLimitChart
+          typeName="Counsellor Use Case"
+          unitData={stats.counsellorByUnit}
+          contractData={stats.counsellorByContract}
+        />
+      )}
     </div>
   );
 }

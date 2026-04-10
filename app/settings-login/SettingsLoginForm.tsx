@@ -1,12 +1,11 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { verifySettingsPin } from "@/lib/actions/auth";
 
 export function SettingsLoginForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const next = searchParams.get("next") ?? "/";
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +18,7 @@ export function SettingsLoginForm() {
     const result = await verifySettingsPin(pin);
     setLoading(false);
     if (result.ok) {
-      router.push(next);
+      window.location.href = next;
     } else {
       setError("Incorrect PIN. Try again.");
       setPin("");

@@ -8,6 +8,7 @@ import {
   IMPL_STATUS_COLORS,
   COMMERCIAL_STAGE_COLORS,
   CHARGEABLE_COLORS,
+  PRIORITY_COLORS,
 } from "@/lib/enums";
 import type { Request, Account } from "@prisma/client";
 
@@ -24,8 +25,8 @@ const COLUMNS = [
   { key: "type", label: "Type" },
   { key: "contract", label: "Contract" },
   { key: "unit", label: "Unit" },
-  { key: "platform", label: "Platform" },
   { key: "implStatus", label: "Impl. Status" },
+  { key: "priority", label: "Priority" },
   { key: "chargeable", label: "Chargeable?" },
   { key: "commercialStage", label: "Commercial Stage" },
   { key: "createdAt", label: "Created" },
@@ -127,11 +128,19 @@ export function RequestTable({ requests, baseHref, showAccount = false }: Reques
               <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{req.type}</td>
               <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{req.contract ?? "—"}</td>
               <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{req.unit ?? "—"}</td>
-              <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{req.platform ?? "—"}</td>
               <td className="px-4 py-3 whitespace-nowrap">
                 <Badge className={IMPL_STATUS_COLORS[req.implStatus] ?? "bg-gray-100 text-gray-600"}>
                   {req.implStatus}
                 </Badge>
+              </td>
+              <td className="px-4 py-3 whitespace-nowrap">
+                {req.priority ? (
+                  <Badge className={PRIORITY_COLORS[req.priority] ?? "bg-gray-100 text-gray-600"}>
+                    {req.priority}
+                  </Badge>
+                ) : (
+                  <span className="text-sm text-gray-400">—</span>
+                )}
               </td>
               <td className="px-4 py-3 whitespace-nowrap">
                 <Badge className={CHARGEABLE_COLORS[req.chargeable] ?? "bg-gray-100 text-gray-600"}>

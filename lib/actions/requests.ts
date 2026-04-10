@@ -6,6 +6,7 @@ import { TRACKED_FIELDS } from "../enums";
 
 export type RequestFilters = {
   accountId?: string;
+  priority?: string;
   implStatus?: string;
   chargeable?: string;
   commercialStage?: string;
@@ -22,6 +23,7 @@ export async function getRequests(filters: RequestFilters = {}) {
   const where: Record<string, unknown> = {};
 
   if (filters.accountId) where.accountId = filters.accountId;
+  if (filters.priority) where.priority = filters.priority;
   if (filters.implStatus) where.implStatus = filters.implStatus;
   if (filters.chargeable) where.chargeable = filters.chargeable;
   if (filters.commercialStage) where.commercialStage = filters.commercialStage;
@@ -60,6 +62,7 @@ export async function getRequest(id: string) {
 export type CreateRequestData = {
   accountId: string;
   item: string;
+  priority?: string;
   type: string;
   contract?: string;
   unit?: string;
@@ -118,13 +121,24 @@ export async function updateRequest(
 
 export async function getDashboardStats(
   accountId?: string,
-  originalScope?: "New request" | "Original" | "all"
+  originalScope?: "New request" | "Original" | "all",
+  unit?: string,
+  contract?: string,
 ) {
   const scopeFilter =
     originalScope && originalScope !== "all"
       ? { originalScope }
       : {};
-  const where = { ...(accountId ? { accountId } : {}), ...scopeFilter };
+  const unitFilter = unit ? { unit } : {};
+  const contractFilter = contract ? { contract } : {};
+  const where = {
+    ...(accountId ? { accountId } : {}),
+    ...scopeFilter,
+    ...unitFilter,
+    ...contractFilter,
+  };
+  // Type-limit queries respect scope only (not unit/contract — they show breakdown BY those)
+  const scopeWhere = { ...(accountId ? { accountId } : {}), ...scopeFilter };
 
   const [total, live, pipeline, chargeableOpen, pendingCommercial] =
     await Promise.all([
@@ -157,6 +171,10 @@ export async function getDashboardStats(
     contractBreakdown,
     unitBreakdownChargeable,
     contractBreakdownChargeable,
+    carePathwaysByUnit,
+    carePathwaysByContract,
+    counsellorByUnit,
+    counsellorByContract,
   ] = await Promise.all([
     prisma.request.groupBy({ by: ["implStatus"], where, _count: true }),
     prisma.request.groupBy({ by: ["chargeable"], where, _count: true }),
@@ -169,6 +187,11 @@ export async function getDashboardStats(
     prisma.request.groupBy({ by: ["contract"], where, _count: true }),
     prisma.request.groupBy({ by: ["unit"], where: chargeableWhere, _count: true }),
     prisma.request.groupBy({ by: ["contract"], where: chargeableWhere, _count: true }),
+    prisma.request.groupBy({ by: ["unit"], where: { ...scopeWhere, type: "Care pathway" }, _count: true }),
+    // contract: groupBy ["contract","item"] so we can deduplicate — same pathway across multiple units = 1 at contract level
+    prisma.request.groupBy({ by: ["contract", "item"], where: { ...scopeWhere, type: "Care pathway" }, _count: true }),
+    prisma.request.groupBy({ by: ["unit"], where: { ...scopeWhere, type: "Counsellor use case" }, _count: true }),
+    prisma.request.groupBy({ by: ["contract", "item"], where: { ...scopeWhere, type: "Counsellor use case" }, _count: true }),
   ]);
 
   return {
@@ -204,5 +227,32 @@ export async function getDashboardStats(
       .filter((r) => r.contract)
       .map((r) => ({ name: r.contract!, count: r._count }))
       .sort((a, b) => b.count - a.count),
+    carePathwaysByUnit: carePathwaysByUnit
+      .filter((r) => r.unit)
+      .map((r) => ({ name: r.unit!, count: r._count }))
+      .sort((a, b) => b.count - a.count),
+    // Deduplicate by item: same pathway across multiple units counts as 1 per contract
+    carePathwaysByContract: (() => {
+      const map = new Map<string, number>();
+      for (const r of carePathwaysByContract) {
+        if (r.contract) map.set(r.contract, (map.get(r.contract) ?? 0) + 1);
+      }
+      return Array.from(map.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+    })(),
+    counsellorByUnit: counsellorByUnit
+      .filter((r) => r.unit)
+      .map((r) => ({ name: r.unit!, count: r._count }))
+      .sort((a, b) => b.count - a.count),
+    counsellorByContract: (() => {
+      const map = new Map<string, number>();
+      for (const r of counsellorByContract) {
+        if (r.contract) map.set(r.contract, (map.get(r.contract) ?? 0) + 1);
+      }
+      return Array.from(map.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+    })(),
   };
 }

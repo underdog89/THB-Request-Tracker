@@ -93,6 +93,7 @@ export function FilterBar({
       {contractOptions.length > 0 && filterSelect("contract", "All Contracts", contractOptions)}
       {unitOptions.length > 0 && filterSelect("unit", "All Units", unitOptions)}
       {filterSelect("implStatus", "All Statuses", implStatusOptions)}
+      {filterSelect("priority", "All Priorities", ["High", "Medium", "Low"])}
       {filterSelect("chargeable", "All Chargeable", chargeableOptions)}
       {filterSelect("commercialStage", "All Stages", commercialStageOptions)}
 

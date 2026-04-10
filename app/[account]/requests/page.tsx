@@ -11,6 +11,7 @@ import Link from "next/link";
 interface PageProps {
   params: { account: string };
   searchParams: {
+    priority?: string;
     implStatus?: string;
     chargeable?: string;
     commercialStage?: string;
@@ -34,6 +35,7 @@ export default async function AccountRequestsPage({ params, searchParams }: Page
 
   const filters = {
     accountId: account.id,
+    priority: searchParams.priority,
     implStatus: searchParams.implStatus,
     chargeable: searchParams.chargeable,
     commercialStage: searchParams.commercialStage,

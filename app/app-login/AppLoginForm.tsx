@@ -1,12 +1,11 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { verifyAppPassword } from "@/lib/actions/auth";
 
 export function AppLoginForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const next = searchParams.get("next") ?? "/";
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +18,7 @@ export function AppLoginForm() {
     const result = await verifyAppPassword(password);
     setLoading(false);
     if (result.ok) {
-      router.push(next);
+      window.location.href = next;
     } else {
       setError("Incorrect password. Try again.");
       setPassword("");

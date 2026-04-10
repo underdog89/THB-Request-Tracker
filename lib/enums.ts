@@ -1,3 +1,11 @@
+export const PRIORITY_OPTIONS = ["High", "Medium", "Low"];
+
+export const PRIORITY_COLORS: Record<string, string> = {
+  High:   "bg-red-100 text-red-700",
+  Medium: "bg-amber-100 text-amber-700",
+  Low:    "bg-blue-100 text-blue-700",
+};
+
 export const TYPE_OPTIONS = [
   "Care pathway",
   "Operating pathway",
@@ -80,6 +88,7 @@ export const GLOBAL_ENUM_MAP: Record<string, string[]> = {
 
 // Fields that can be tracked in status history
 export const TRACKED_FIELDS = [
+  "priority",
   "implStatus",
   "inPipelineOrLive",
   "commercialStage",
@@ -90,6 +99,7 @@ export const TRACKED_FIELDS = [
 // Human-readable field labels
 export const FIELD_LABELS: Record<string, string> = {
   item: "Item",
+  priority: "Priority",
   type: "Type",
   contract: "Contract",
   unit: "Unit",

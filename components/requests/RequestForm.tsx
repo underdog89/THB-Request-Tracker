@@ -11,6 +11,7 @@ import {
   IN_CONTRACT_OPTIONS,
   CHARGEABLE_OPTIONS,
   IN_PIPELINE_OR_LIVE_OPTIONS,
+  PRIORITY_OPTIONS,
 } from "@/lib/enums";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -21,6 +22,7 @@ import type { Account, AccountConfig, Request } from "@prisma/client";
 const schema = z.object({
   accountId: z.string().min(1, "Account is required"),
   item: z.string().min(1, "Item name is required"),
+  priority: z.string().optional(),
   type: z.string().min(1, "Type is required"),
   contract: z.string().optional(),
   unit: z.string().optional(),
@@ -67,6 +69,7 @@ export function RequestForm({
       ? {
           accountId: editRequest.accountId,
           item: editRequest.item,
+          priority: editRequest.priority ?? "",
           type: editRequest.type,
           contract: editRequest.contract ?? "",
           unit: editRequest.unit ?? "",
@@ -174,6 +177,17 @@ export function RequestForm({
               {typeOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
             </select>
             {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-gray-700">Priority</label>
+            <select
+              {...register("priority")}
+              className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">—</option>
+              {PRIORITY_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
 
           {contractOptions.length > 0 && (
