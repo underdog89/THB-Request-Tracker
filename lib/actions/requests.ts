@@ -85,6 +85,11 @@ export async function createRequest(data: CreateRequestData) {
   return request;
 }
 
+export async function deleteRequest(id: string) {
+  await prisma.request.delete({ where: { id } });
+  revalidatePath("/");
+}
+
 export type UpdateRequestData = Partial<Omit<CreateRequestData, "accountId">>;
 
 export async function updateRequest(

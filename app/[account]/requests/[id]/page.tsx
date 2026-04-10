@@ -4,6 +4,7 @@ import { getAccountBySlug } from "@/lib/actions/accounts";
 import { ImplementationPanel } from "@/components/detail/ImplementationPanel";
 import { CommercialPanel } from "@/components/detail/CommercialPanel";
 import { AuditLog } from "@/components/detail/AuditLog";
+import { DeleteRequestButton } from "@/components/detail/DeleteRequestButton";
 import Link from "next/link";
 
 interface PageProps {
@@ -24,16 +25,23 @@ export default async function RequestDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/${account.slug}`} className="hover:underline text-gray-900 font-medium">
-          {account.name}
-        </Link>
-        <span>/</span>
-        <Link href={`/${account.slug}/requests`} className="hover:underline">
-          Requests
-        </Link>
-        <span>/</span>
-        <span className="text-gray-900 font-medium truncate max-w-xs">{request.item}</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <Link href={`/${account.slug}`} className="hover:underline text-gray-900 font-medium">
+            {account.name}
+          </Link>
+          <span>/</span>
+          <Link href={`/${account.slug}/requests`} className="hover:underline">
+            Requests
+          </Link>
+          <span>/</span>
+          <span className="text-gray-900 font-medium truncate max-w-xs">{request.item}</span>
+        </div>
+        <DeleteRequestButton
+          requestId={request.id}
+          requestItem={request.item}
+          redirectTo={`/${account.slug}/requests`}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

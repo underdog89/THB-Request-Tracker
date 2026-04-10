@@ -5,7 +5,7 @@ import { Pencil } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IMPL_STATUS_COLORS, FIELD_LABELS } from "@/lib/enums";
+import { IMPL_STATUS_COLORS, PRIORITY_OPTIONS, PRIORITY_COLORS, FIELD_LABELS } from "@/lib/enums";
 import { updateRequest } from "@/lib/actions/requests";
 import { useRouter } from "next/navigation";
 import type { Request, Account, AccountConfig } from "@prisma/client";
@@ -28,6 +28,7 @@ export function ImplementationPanel({ request, accountSlug: _slug }: Implementat
 
   const [values, setValues] = useState({
     type: request.type,
+    priority: request.priority ?? "",
     contract: request.contract ?? "",
     unit: request.unit ?? "",
     platform: request.platform ?? "",
@@ -106,6 +107,7 @@ export function ImplementationPanel({ request, accountSlug: _slug }: Implementat
             <Row label={FIELD_LABELS.unit} value={request.unit} />
             <Row label={FIELD_LABELS.platform} value={request.platform} />
             <Row label={FIELD_LABELS.implStatus} value={request.implStatus} colorMap={IMPL_STATUS_COLORS} />
+            <Row label={FIELD_LABELS.priority} value={request.priority} colorMap={PRIORITY_COLORS} />
             <Row label={FIELD_LABELS.inPipelineOrLive} value={request.inPipelineOrLive} />
             <Row label={FIELD_LABELS.originalScope} value={request.originalScope} />
             {request.remarks && (
@@ -140,6 +142,10 @@ export function ImplementationPanel({ request, accountSlug: _slug }: Implementat
             <div>
               <label className="block text-xs text-gray-500 mb-1">Impl. Status</label>
               {selectField("implStatus", implStatusOptions)}
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Priority</label>
+              {selectField("priority", PRIORITY_OPTIONS, "—")}
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">In Pipeline / Live</label>

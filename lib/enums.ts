@@ -32,6 +32,8 @@ export const IMPL_STATUS_OPTIONS = [
   "Live",
   "Closed",
   "To be picked up",
+  "On Hold",
+  "Invalid",
 ];
 
 export const IN_PIPELINE_OR_LIVE_OPTIONS = ["Pipeline", "Live"];
@@ -125,6 +127,8 @@ export const IMPL_STATUS_COLORS: Record<string, string> = {
   Live: "bg-green-100 text-green-700",
   Closed: "bg-gray-100 text-gray-500",
   "To be picked up": "bg-orange-100 text-orange-700",
+  "On Hold":         "bg-yellow-100 text-yellow-700",
+  "Invalid":         "bg-red-100 text-red-500",
 };
 
 export const COMMERCIAL_STAGE_COLORS: Record<string, string> = {
